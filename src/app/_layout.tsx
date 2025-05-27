@@ -4,7 +4,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SQLiteProvider } from "expo-sqlite";
 
-import { migrateDbIfNeeded } from "@/db";
+import { migrateDbIfNeeded } from "@/utils/db";
 
 import Fallback from "@/components/Fallback";
 
