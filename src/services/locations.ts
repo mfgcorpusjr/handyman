@@ -1,6 +1,18 @@
 import { SQLiteDatabase } from "expo-sqlite";
 import { Location } from "@/types";
 
+export const getLocation = async (db: SQLiteDatabase, id: number) => {
+  try {
+    return await db.getFirstAsync<Location>(
+      "SELECT * FROM locations WHERE id = ?",
+      id
+    );
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
+
 export const getLocations = async (db: SQLiteDatabase) => {
   try {
     return await db.getAllAsync<Location>("SELECT * FROM locations");

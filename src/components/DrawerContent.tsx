@@ -39,6 +39,11 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
     }
   }, [drawerStatus]);
 
+  const handleCustomDrawerItemPress = (path: string) => {
+    router.push(path);
+    props.navigation.closeDrawer();
+  };
+
   return (
     <View style={styles.container}>
       <DrawerContentScrollView>
@@ -64,7 +69,7 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
                   focused={path === currentPath}
                   activeTintColor={colors.tint}
                   style={{ borderRadius: 4 }}
-                  onPress={() => router.push(path)}
+                  onPress={() => handleCustomDrawerItemPress(path)}
                 />
               );
             })}
