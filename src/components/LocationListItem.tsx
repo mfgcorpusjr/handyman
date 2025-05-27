@@ -52,6 +52,6 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   text: {
-    fontSize: 16,
+    fontSize: 18,
   },
 });

@@ -1,9 +1,13 @@
-import { useState } from "react";
-import { StyleSheet, View, Text, Switch } from "react-native";
+import { useState, useEffect } from "react";
+import { StyleSheet, View, Text, Switch, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useSQLiteContext } from "expo-sqlite";
+import { useLocalSearchParams, router } from "expo-router";
 
 import AppTextInput from "@/components/ui/AppTextInput";
 import AppButton from "@/components/ui/AppButton";
+
+import { getTask, addTask, updateTask, deleteTask } from "@/services/tasks";
 
 import colors from "@/constants/colors";
 
@@ -11,6 +15,61 @@ export default function CreateScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isUrgent, setIsUrgent] = useState(false);
+
+  const { id: locationId, taskId } = useLocalSearchParams();
+
+  const db = useSQLiteContext();
+
+  useEffect(() => {
+    const fetchTask = async () => {
+      const task = await getTask(db, Number(taskId));
+      if (task) {
+        setTitle(task.title);
+        setDescription(task.description);
+        setIsUrgent(!!task.is_urgent);
+      }
+    };
+
+    if (taskId) {
+      fetchTask();
+    }
+  }, [taskId]);
+
+  const handleAddUpdateTask = () => {
+    const task = {
+      location_id: Number(locationId),
+      title,
+      description,
+      image_uri: null,
+      is_urgent: isUrgent ? 1 : 0,
+    };
+
+    if (taskId) {
+      updateTask(db, { ...task, id: Number(taskId) });
+    } else {
+      addTask(db, task);
+    }
+
+    router.dismissTo(`/locations/${locationId}`);
+  };
+
+  const handleFinishTask = () => {
+    Alert.alert(
+      "Finish Task",
+      "Are you sure you want to finish this task? It will be removed from the database.",
+      [
+        { text: "Cancel" },
+        {
+          text: "Finish",
+          style: "destructive",
+          onPress: () => {
+            deleteTask(db, Number(taskId));
+            router.dismissTo(`/locations/${locationId}`);
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
@@ -39,8 +98,12 @@ export default function CreateScreen() {
           />
         </View>
 
-        <AppButton text="Update Task" style={styles.updateTaskButton} />
-        <AppButton text="Finish Task" />
+        <AppButton
+          text={taskId ? "Update Task" : "Add Task"}
+          style={styles.addUpdateTaskButton}
+          onPress={handleAddUpdateTask}
+        />
+        {taskId && <AppButton text="Finish Task" onPress={handleFinishTask} />}
       </View>
     </SafeAreaView>
   );
@@ -63,7 +126,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
   },
-  updateTaskButton: {
+  addUpdateTaskButton: {
     backgroundColor: colors.tint,
   },
 });

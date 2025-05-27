@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, View, FlatList, Text } from "react-native";
+import { View, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSQLiteContext } from "expo-sqlite";
+
+import LocationForm from "@/components/LocationForm";
+import LocationListItem from "@/components/LocationListItem";
+import ListEmpty from "@/components/ListEmpty";
 
 import { Location } from "@/types";
 
 import { getLocations } from "@/services/locations";
-
-import LocationForm from "@/components/LocationForm";
-import LocationListItem from "@/components/LocationListItem";
 
 export default function ManageLocationsScreen() {
   const [locations, setLocations] = useState<Location[]>();
@@ -35,19 +36,10 @@ export default function ManageLocationsScreen() {
             <LocationListItem location={item} onDelete={handleGetLocations} />
           )}
           contentContainerStyle={{ gap: 8 }}
-          ListEmptyComponent={
-            <Text style={styles.emptyText}>No locations found</Text>
-          }
+          ListEmptyComponent={<ListEmpty text="No locations found" />}
           showsVerticalScrollIndicator={false}
         />
       </View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  emptyText: {
-    color: "grey",
-    textAlign: "center",
-  },
-});

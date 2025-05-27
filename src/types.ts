@@ -9,5 +9,5 @@ export type Task = {
   title: string;
   description: string;
   image_uri: string | null;
-  is_urgent: boolean;
+  is_urgent: number;
 };
