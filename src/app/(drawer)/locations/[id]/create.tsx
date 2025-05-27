@@ -118,10 +118,15 @@ export default function CreateScreen() {
           <AppButton
             text={taskId ? "Update Task" : "Add Task"}
             style={styles.addUpdateTaskButton}
+            disabled={!title.trim()}
             onPress={handleAddUpdateTask}
           />
           {taskId && (
-            <AppButton text="Finish Task" onPress={handleFinishTask} />
+            <AppButton
+              text="Finish Task"
+              onPress={handleFinishTask}
+              disabled={!title.trim()}
+            />
           )}
         </ScrollView>
       </KeyboardAvoidingView>
