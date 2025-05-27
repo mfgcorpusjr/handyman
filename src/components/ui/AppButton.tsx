@@ -4,9 +4,12 @@ type AppButtonProps = {
   text: string;
 } & PressableProps;
 
-export default function AppButton({ text }: AppButtonProps) {
+export default function AppButton({ text, ...rest }: AppButtonProps) {
   return (
-    <Pressable style={styles.container}>
+    <Pressable
+      {...rest}
+      style={[styles.container, rest.disabled && styles.disabledContainer]}
+    >
       <Text style={styles.text}>{text}</Text>
     </Pressable>
   );
@@ -17,6 +20,9 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     padding: 12,
     borderRadius: 4,
+  },
+  disabledContainer: {
+    backgroundColor: "darkgrey",
   },
   text: {
     color: "white",

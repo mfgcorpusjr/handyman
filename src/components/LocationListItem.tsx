@@ -1,11 +1,36 @@
 import { StyleSheet, View, Text } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useSQLiteContext } from "expo-sqlite";
 
-export default function LocationListItem() {
+import { deleteLocation } from "@/services/locations";
+
+import { Location } from "@/types";
+
+type LocationListItemProps = {
+  location: Location;
+  onDelete: () => void;
+};
+
+export default function LocationListItem({
+  location,
+  onDelete,
+}: LocationListItemProps) {
+  const db = useSQLiteContext();
+
+  const handleDeleteLocation = async () => {
+    deleteLocation(db, location.id);
+    onDelete();
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>School</Text>
-      <Ionicons name="trash-outline" size={24} color="crimson" />
+      <Text style={styles.text}>{location.name}</Text>
+      <Ionicons
+        name="trash-outline"
+        size={24}
+        color="crimson"
+        onPress={handleDeleteLocation}
+      />
     </View>
   );
 }
@@ -22,10 +47,9 @@ const styles = StyleSheet.create({
       width: 0,
       height: 1,
     },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-
-    elevation: 2,
+    shadowOpacity: 0.18,
+    shadowRadius: 1.0,
+    elevation: 1,
   },
   text: {
     fontSize: 16,
