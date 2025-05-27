@@ -13,7 +13,7 @@ export default function DrawerLayout() {
         headerTintColor: "black",
         drawerActiveTintColor: colors.tint,
         drawerItemStyle: {
-          borderRadius: 8,
+          borderRadius: 4,
         },
       }}
     >

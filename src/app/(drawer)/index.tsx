@@ -1,9 +1,14 @@
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
+
+import LocationForm from "@/components/LocationForm";
+import LocationListItem from "@/components/LocationListItem";
 
 export default function ManageLocationsScreen() {
   return (
     <View style={styles.container}>
-      <Text>Manage Locations Screen</Text>
+      <LocationForm />
+
+      <LocationListItem />
     </View>
   );
 }
