@@ -1,5 +1,7 @@
 import { Drawer } from "expo-router/drawer";
 
+import DrawerContent from "@/components/DrawerContent";
+
 import colors from "@/constants/colors";
 
 export default function DrawerLayout() {
@@ -16,8 +18,13 @@ export default function DrawerLayout() {
           borderRadius: 4,
         },
       }}
+      drawerContent={DrawerContent}
     >
       <Drawer.Screen name="index" options={{ title: "Manage Locations" }} />
+      <Drawer.Screen
+        name="locations/[id]"
+        options={{ drawerItemStyle: { display: "none" } }}
+      />
     </Drawer>
   );
 }
