@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
-import { StyleSheet, View, Text, Switch, Alert } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  Switch,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useHeaderHeight } from "@react-navigation/elements";
 import { useSQLiteContext } from "expo-sqlite";
 import { useLocalSearchParams, router } from "expo-router";
 
@@ -19,6 +29,8 @@ export default function CreateScreen() {
   const { id: locationId, taskId } = useLocalSearchParams();
 
   const db = useSQLiteContext();
+
+  const headerHeight = useHeaderHeight();
 
   useEffect(() => {
     const fetchTask = async () => {
@@ -73,50 +85,58 @@ export default function CreateScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
-      <View style={styles.container}>
-        <AppTextInput
-          value={title}
-          onChangeText={setTitle}
-          placeholder="E.g. Study Physics"
-        />
-
-        <AppTextInput
-          style={styles.description}
-          value={description}
-          onChangeText={setDescription}
-          placeholder="E.g. Review Newton's laws and solve practice problems on motion and forces."
-          multiline
-        />
-
-        <View style={styles.urgentContainer}>
-          <Text style={styles.label}>Urgent</Text>
-
-          <Switch
-            value={isUrgent}
-            onValueChange={setIsUrgent}
-            trackColor={{ true: colors.tint }}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={headerHeight}
+      >
+        <ScrollView contentContainerStyle={styles.container}>
+          <AppTextInput
+            value={title}
+            onChangeText={setTitle}
+            placeholder="E.g. Study Physics"
           />
-        </View>
 
-        <AppButton
-          text={taskId ? "Update Task" : "Add Task"}
-          style={styles.addUpdateTaskButton}
-          onPress={handleAddUpdateTask}
-        />
-        {taskId && <AppButton text="Finish Task" onPress={handleFinishTask} />}
-      </View>
+          <AppTextInput
+            style={styles.description}
+            value={description}
+            onChangeText={setDescription}
+            placeholder="E.g. Review Newton's laws and solve practice problems on motion and forces."
+            multiline
+          />
+
+          <View style={styles.urgentContainer}>
+            <Text style={styles.label}>Urgent</Text>
+
+            <Switch
+              value={isUrgent}
+              onValueChange={setIsUrgent}
+              trackColor={{ true: colors.tint }}
+            />
+          </View>
+
+          <AppButton
+            text={taskId ? "Update Task" : "Add Task"}
+            style={styles.addUpdateTaskButton}
+            onPress={handleAddUpdateTask}
+          />
+          {taskId && (
+            <AppButton text="Finish Task" onPress={handleFinishTask} />
+          )}
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 8,
     gap: 20,
   },
   description: {
-    height: 100,
+    height: 200,
   },
   urgentContainer: {
     flexDirection: "row",
