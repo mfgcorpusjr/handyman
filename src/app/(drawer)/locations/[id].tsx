@@ -1,11 +1,15 @@
 import { useState, useCallback } from "react";
-import { StyleSheet, View } from "react-native";
-import { useLocalSearchParams, Stack, useFocusEffect } from "expo-router";
+import { StyleSheet, View, Pressable } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useLocalSearchParams, Stack, useFocusEffect, Link } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 
 import { getLocation } from "@/services/locations";
 
 import { Location } from "@/types";
+
+import colors from "@/constants/colors";
 
 export default function LocationDetails() {
   const [location, setLocation] = useState<Location | null>();
@@ -26,14 +30,30 @@ export default function LocationDetails() {
   );
 
   return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: location?.name }} />
-    </View>
+    <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+      <View style={{ flex: 1 }}>
+        <Stack.Screen options={{ title: location?.name }} />
+
+        <Link href={`/locations/${id}/create`} asChild>
+          <Pressable style={styles.floatingButton}>
+            <Ionicons name="add-outline" size={24} color="white" />
+          </Pressable>
+        </Link>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  floatingButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: colors.tint,
+    position: "absolute",
+    bottom: 0,
+    right: 20,
   },
 });

@@ -1,14 +1,26 @@
-import { StyleSheet, Pressable, Text, PressableProps } from "react-native";
+import {
+  StyleSheet,
+  Pressable,
+  Text,
+  PressableProps,
+  StyleProp,
+  ViewStyle,
+} from "react-native";
 
 type AppButtonProps = {
   text: string;
+  style?: StyleProp<ViewStyle>;
 } & PressableProps;
 
-export default function AppButton({ text, ...rest }: AppButtonProps) {
+export default function AppButton({ text, style, ...rest }: AppButtonProps) {
   return (
     <Pressable
       {...rest}
-      style={[styles.container, rest.disabled && styles.disabledContainer]}
+      style={[
+        styles.container,
+        style,
+        rest.disabled && styles.disabledContainer,
+      ]}
     >
       <Text style={styles.text}>{text}</Text>
     </Pressable>
@@ -20,6 +32,8 @@ const styles = StyleSheet.create({
     backgroundColor: "black",
     padding: 12,
     borderRadius: 4,
+    justifyContent: "center",
+    alignItems: "center",
   },
   disabledContainer: {
     backgroundColor: "darkgrey",

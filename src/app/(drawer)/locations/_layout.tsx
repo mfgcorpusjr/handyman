@@ -15,6 +15,7 @@ export default function LocationsLayout() {
           ),
         }}
       />
+      <Stack.Screen name="[id]/create" options={{ headerBackTitle: "Back" }} />
     </Stack>
   );
 }
