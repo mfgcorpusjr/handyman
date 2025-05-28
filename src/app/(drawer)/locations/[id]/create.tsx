@@ -8,11 +8,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSQLiteContext } from "expo-sqlite";
 import { useLocalSearchParams, router } from "expo-router";
+import * as ImagePicker from "expo-image-picker";
 
 import AppTextInput from "@/components/ui/AppTextInput";
 import AppButton from "@/components/ui/AppButton";
@@ -25,6 +27,7 @@ export default function CreateScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [isUrgent, setIsUrgent] = useState(false);
+  const [image, setImage] = useState("");
 
   const { id: locationId, taskId } = useLocalSearchParams();
 
@@ -39,6 +42,7 @@ export default function CreateScreen() {
         setTitle(task.title);
         setDescription(task.description);
         setIsUrgent(!!task.is_urgent);
+        setImage(task.image_uri || "");
       }
     };
 
@@ -52,7 +56,7 @@ export default function CreateScreen() {
       location_id: Number(locationId),
       title,
       description,
-      image_uri: null,
+      image_uri: image,
       is_urgent: isUrgent ? 1 : 0,
     };
 
@@ -81,6 +85,27 @@ export default function CreateScreen() {
         },
       ]
     );
+  };
+
+  const handlePickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work.");
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    } else {
+      setImage("");
+    }
   };
 
   return (
@@ -114,6 +139,12 @@ export default function CreateScreen() {
               trackColor={{ true: colors.tint }}
             />
           </View>
+
+          {image && <Image style={styles.image} source={{ uri: image }} />}
+
+          <Text style={styles.addImageText} onPress={handlePickImage}>
+            {image ? "Change Image" : "Add Image"}
+          </Text>
 
           <AppButton
             text={taskId ? "Update Task" : "Add Task"}
@@ -153,5 +184,15 @@ const styles = StyleSheet.create({
   },
   addUpdateTaskButton: {
     backgroundColor: colors.tint,
+  },
+  image: {
+    width: "100%",
+    aspectRatio: 4 / 3,
+  },
+  addImageText: {
+    textAlign: "center",
+    fontSize: 16,
+    fontWeight: "600",
+    color: colors.tint,
   },
 });
