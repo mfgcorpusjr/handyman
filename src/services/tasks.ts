@@ -24,7 +24,7 @@ export const getTasksByLocation = async (db: SQLiteDatabase, id: number) => {
 
 export const addTask = async (db: SQLiteDatabase, task: Omit<Task, "id">) => {
   try {
-    await db.runAsync(
+    const result = await db.runAsync(
       "INSERT INTO tasks (location_id, title, description, image_uri, is_urgent) VALUES (?, ?, ?, ?, ?)",
       task.location_id,
       task.title,
@@ -32,6 +32,8 @@ export const addTask = async (db: SQLiteDatabase, task: Omit<Task, "id">) => {
       task.image_uri,
       task.is_urgent
     );
+
+    return result.lastInsertRowId;
   } catch (error) {
     console.log(error);
   }

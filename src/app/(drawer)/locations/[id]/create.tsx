@@ -15,6 +15,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useSQLiteContext } from "expo-sqlite";
 import { useLocalSearchParams, router } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
+import * as Notifications from "expo-notifications";
 
 import AppTextInput from "@/components/ui/AppTextInput";
 import AppButton from "@/components/ui/AppButton";
@@ -29,7 +30,10 @@ export default function CreateScreen() {
   const [isUrgent, setIsUrgent] = useState(false);
   const [image, setImage] = useState("");
 
-  const { id: locationId, taskId } = useLocalSearchParams();
+  const { id: locationId, taskId } = useLocalSearchParams<{
+    id: string;
+    taskId: string;
+  }>();
 
   const db = useSQLiteContext();
 
@@ -51,7 +55,7 @@ export default function CreateScreen() {
     }
   }, [taskId]);
 
-  const handleAddUpdateTask = () => {
+  const handleAddUpdateTask = async () => {
     const task = {
       location_id: Number(locationId),
       title,
@@ -60,10 +64,12 @@ export default function CreateScreen() {
       is_urgent: isUrgent ? 1 : 0,
     };
 
-    if (taskId) {
-      updateTask(db, { ...task, id: Number(taskId) });
-    } else {
-      addTask(db, task);
+    const result = taskId
+      ? await updateTask(db, { ...task, id: Number(taskId) })
+      : await addTask(db, task);
+
+    if (isUrgent) {
+      handleNotification(Number(taskId || result), title);
     }
 
     router.dismissTo(`/locations/${locationId}`);
@@ -106,6 +112,23 @@ export default function CreateScreen() {
     } else {
       setImage("");
     }
+  };
+
+  const handleNotification = async (taskId: number, title: string) => {
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "Urgent Task Reminder",
+        body: `Dont forget about your urgent task: ${title}`,
+        data: {
+          locationId,
+          taskId,
+        },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 5,
+      },
+    });
   };
 
   return (
